@@ -39,16 +39,42 @@ export default function Signup() {
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        // eslint-disable-next-line no-console
-        axios.post("http://localhost:8000/api/auth/register", {
-            username: user,
-            email: email,
-            password: data.get("password")
-        }).then(res => {
-            navigate("/login");
+        console.log(event.currentTarget);
+        console.log(data);
+
+        // // eslint-disable-next-line no-console
+        // axios.post("http://localhost:8080/api/auth/signup", {
+        //     username: user,
+        //     email: email,
+        //     password: data.get("password")
+        // }).then(res => {
+        //     navigate("/login");
+        // }).catch(err => {
+        //     window.alert(err.response.data);
+        // })
+
+        const signupUrl = "http://localhost:8080/signup";
+
+        // const data = {
+        //     username: user,
+        //     email: email,
+        //     password: data.get("password")
+        // }
+
+        return fetch(signupUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        }).then((response) => {
+            if (response.status < 200 || response.status >= 300) {
+                throw Error("Fail to sign up");
+                // window.alert(err.response.data);
+            }
         }).catch(err => {
             window.alert(err.response.data);
-        })
+        });
     };
 
     const paperStyle = { padding: 20, width: 300, margin: "30px auto" }
