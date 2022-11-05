@@ -58,7 +58,7 @@ const Header = () => {
         <Fragment>
             <div className='nav-container'>
                 <div className='left-nav'>
-                    <Link to="/">Lai Market</Link>
+                    <Link to="/">Trade Market</Link>
                 </div>
                 <div className='mid-nav'>
                     <SearchBar />
