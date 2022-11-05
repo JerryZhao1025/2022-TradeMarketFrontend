@@ -78,7 +78,7 @@ const Header = () => {
                         </Fragment>
                         :
                         <Fragment>
-                            <Link to="/register">REGISTER</Link>
+                            <Link to="/signup">REGISTER</Link>
                             <Link to="/login">LOG IN</Link>
                         </Fragment>
                     }
