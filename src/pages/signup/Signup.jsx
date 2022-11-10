@@ -14,19 +14,19 @@ const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{6,24}$/;
 export default function Signup() {
 
     const [user, setUser] = useState('');
-    const [validName, setValidName] = useState(false);
+    const [validUserName, setValidUserName] = useState(false);
+    const [email, setEmail] = useState('');
+    const [firstname, setFirstName] = useState('');
+    const [lastname, setLastName] = useState('');
 
     const [pwd, setPwd] = useState('');
     const [validPwd, setValidPwd] = useState(false);
-
-    const [email, setEmail] = useState('');
-
     const [matchPwd, setMatchPwd] = useState('');
-    const [validMatch, setValidMatch] = useState(false);
+    const [validMatch, setValidMatch] = useState(false); // check if pwd is matched with second time
 
     useEffect(() => {
         const result = USER_REGEX.test(user);
-        setValidName(USER_REGEX.test(user));
+        setValidUserName(result);
     }, [user])
 
     useEffect(() => {
@@ -38,42 +38,39 @@ export default function Signup() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        console.log(event.currentTarget);
+
+        const data = {
+            username: user,
+            firstname: firstname,
+            lastname: lastname,
+            email: email,
+            password: pwd,
+        }
+
         console.log(data);
 
-        // // eslint-disable-next-line no-console
-        // axios.post("http://localhost:8080/api/auth/signup", {
-        //     username: user,
-        //     email: email,
-        //     password: data.get("password")
-        // }).then(res => {
-        //     navigate("/login");
-        // }).catch(err => {
-        //     window.alert(err.response.data);
-        // })
+        const signup = (data) => {
+            const signupUrl = "/signup";
+        
+            return fetch(signupUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            }).then((response) => {
+                if (response.status < 200 || response.status >= 300) {
+                    throw Error("Fail to sign up");
+                }
+            });
+        };
 
-        const signupUrl = "http://localhost:8080/signup";
-
-        // const data = {
-        //     username: user,
-        //     email: email,
-        //     password: data.get("password")
-        // }
-
-        return fetch(signupUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        }).then((response) => {
-            if (response.status < 200 || response.status >= 300) {
-                throw Error("Fail to sign up");
-                // window.alert(err.response.data);
-            }
-        }).catch(err => {
-            window.alert(err.response.data);
+        signup(data)
+        .then(() => {
+            navigate("/login");
+        })
+        .catch(() => {
+            window.alert('Sign up failed');
         });
     };
 
@@ -97,22 +94,48 @@ export default function Signup() {
                     sx={{ mt: 3 }}
                 >
                     <Grid>
-                        <TextField fullWidth label='First Name' placeholder="Enter your First Name" />
-                        <TextField fullWidth label='Last Name' placeholder="Enter your Last Name" />
-                        <TextField fullWidth label='Email Address' placeholder="Enter your Email Address" value={email}
-                            onChange={e => setEmail(e.target.value)} />
+                        <TextField fullWidth label='First Name' 
+                            placeholder="Enter your First Name" 
+                            value={firstname}
+                            onChange={e => setFirstName(e.target.value)} 
+                        />
 
-                        <TextField onChange={(e) => setUser(e.target.value)} value={user}
-                            fullWidth id='username' name='username' label='UserName' placeholder="Enter your username" />
+                        <TextField fullWidth label='Last Name' 
+                            placeholder="Enter your Last Name" 
+                            value={lastname}
+                            onChange={e => setLastName(e.target.value)} 
+                        />
 
+                        <TextField fullWidth label='Email Address' 
+                            placeholder="Enter your Email Address" 
+                            value={email}
+                            onChange={e => setEmail(e.target.value)} 
+                        />
 
+                        <TextField fullWidth label='UserName' 
+                            placeholder="Enter your username" 
+                            id='username' name='username' 
+                            value={user}
+                            onChange={e => setUser(e.target.value)} 
+                        />
 
-                        <TextField type="password" fullWidth id='password' name='password' label='Password' placeholder="Enter your password" />
-                        <TextField type="password" fullWidth label='Confirm Password' placeholder="Confirm your password" />
-                        <FormControlLabel
+                        <TextField type="password" fullWidth 
+                            id='password' name='password' label='Password' 
+                            placeholder="Enter your password" 
+                            onChange={e => setPwd(e.target.value)} 
+                        />
+
+                        <TextField type="password" fullWidth 
+                            label='Confirm Password' 
+                            placeholder="Confirm your password" 
+                            onChange={e => setMatchPwd(e.target.value)} 
+                        />
+                        
+                        {/* <FormControlLabel
                             control={<Checkbox name="checkedA" />}
                             label="I accept the terms and conditions."
-                        />
+                        /> */}
+
                         <Button
                             type="submit"
                             fullWidth
