@@ -13,6 +13,7 @@ const SearchResult = () => {
     useEffect(() => {
         const parser = new URLSearchParams(location.search);
         const category = parser.get("category");
+        // TODO: 
         axios.get(`${BACKEDN_API}/product?category=${category}`).then(res => {
             setProducts(res.data);
         })
@@ -20,7 +21,8 @@ const SearchResult = () => {
 
     return (
         <Fragment>
-            <Header /> {
+            <Header /> 
+            {
                 products.length === 0 ?
                     <h2>Nothing Found...</h2> :
                     <ProductList products={products} />

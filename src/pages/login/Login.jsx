@@ -20,14 +20,12 @@ export default function Login({ handleChange }) {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        // const data = new FormData(event.currentTarget);
-        // eslint-disable-next-line no-console
-        console.log(username, password);
+
+        // 远帆之前的代码
         // axios.post(`${BACKEDN_API}/login`, {
         //     username: username,
         //     password: password
         // }).then(res => {
-        //     debugger;
         //     const loginUser = res.data;
         //     dispatch(setUser(loginUser));
         //     localStorage.setItem('token', loginUser.accessToken);
@@ -43,29 +41,43 @@ export default function Login({ handleChange }) {
             password: password,
         }
 
-        const signin = (data) => {
+        // sign in 的 input data就是上面定义的data本身（username & password），此函数会被调用一次
+        function signin (inputdata) { 
             const signinUrl = "/signin";
-        
             return fetch(signinUrl, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(data),
-            }).then((response) => {
+                // 给后端正儿八经的数据传输内容，放在httpRequest的body里
+                body: JSON.stringify(inputdata),
+            })
+            // 老鸟注释：fetch的返回值本身是promise，但等promise到的时候(若无异常，call then，有异常 call catch)
+            // 若走的是then，response将会包含后端给的返回值，which should include token
+            .then(function(response) {
                 if (response.status < 200 || response.status >= 300) {
                     throw Error("Fail to sign in");
                 }
+                return response.json();
+            })
+            .then((data) => {    
+                // 注意：这个then之后的处理取决于后端返回的具体内容           
+                const token = data['token'];
+                if (token === undefined) {
+                    throw Error("We don't get token");
+                }
+                // TODO: if it is valid, store the token from response to localstorage
+                // TODO: need to solve the problem that localstoreage will bve removed wieh we redirect / navigate to new page
+                localStorage.setItem('token', token);
+                navigate("/");
+            })
+            .catch((err) => {
+                console.log(err);
+                window.alert('Sign in failed');
             });
         };
 
-        signin(data)
-        .then(() => {
-            navigate("/");
-        })
-        .catch(() => {
-            window.alert('Sign in failed');
-        });
+        signin(data) // promise 携带的参数是 response
     };
 
     const paperStyle = { padding: 20, height: '73vh', width: 300, margin: "30px auto" }
@@ -88,15 +100,6 @@ export default function Login({ handleChange }) {
                             onChange={e => setUserName(e.target.value)} />
                     <TextField name='password' label='Password' placeholder='Enter password' type='password' fullWidth required value={password}
                             onChange={e => setPassword(e.target.value)}/>
-                    {/* <FormControlLabel
-                        control={
-                            <Checkbox
-                                name="checkedB"
-                                color="primary"
-                            />
-                        }
-                        label="Remember me"
-                    /> */}
                     <Button type='submit' color='primary' variant="contained" style={btnstyle} fullWidth>Sign in</Button>
                     <Typography >
                         <Link href="tmp/TradeMarketFrontend/src/pages/login/Login#" >
@@ -104,7 +107,6 @@ export default function Login({ handleChange }) {
                         </Link>
                     </Typography>
                     <Typography > Do you have an account ?
-                        {/* <Link component = "button" onClick={()=>handleChange("event",1)} > */}
                         <Link component="button" onClick={() => navigate("/signup")} >
                             Sign Up
                         </Link>

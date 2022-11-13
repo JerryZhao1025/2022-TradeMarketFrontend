@@ -21,6 +21,8 @@ const SearchBar = () => {
     const handleSearch = () => {
         console.log("keyword: " + keyword);
         console.log("option: " + options[optionIdx]);
+        // TODO: send request to backend
+        // TODO: and rerender? the page based on backend 
         navigate(`/product/search?category=${options[optionIdx]}&keyword=${keyword}`);
         // axios.get(`${BACKEDN_API}/product${optionIdx === 0 ? "" : "?category=" + options[optionIdx]}`).then(res =>
         //     console.log(res.data)
