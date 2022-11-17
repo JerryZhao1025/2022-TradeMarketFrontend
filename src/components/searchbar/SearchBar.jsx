@@ -17,7 +17,7 @@ const SearchBar = () => {
     const handleOptionChange = (event) => {
         setOptionIdx(event.target.value);
     };
-
+    
     const handleSearch = () => {
         console.log("keyword: " + keyword);
         console.log("option: " + options[optionIdx]);
@@ -30,12 +30,31 @@ const SearchBar = () => {
     }
 
     useEffect(() => {
+        const tagListUrl = "/tags";
+        fetch(tagListUrl, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        }).then(function(response) {
+            return response.json();
+        }).then((data) => {
+            //console.log(data);
+            const tags = [];
+            for (var i = 0; i < data.length;i++) {
+                //console.log(data[i].tagName);
+                tags.push(data[i].tagName);
+            }
+            setOptions(["All",...tags]);
+        });
+        /* 远帆之前的代码
         axios.get(`${BACKEDN_API}/category`)
             .then(res => {
                 setOptions(["All", ...res.data]);
             }).catch(err => {
                 console.log(err)
             })
+            */
     }, [])
 
 
